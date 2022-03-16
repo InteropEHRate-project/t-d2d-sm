@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.interopehrate</groupId>
-    <artifactId>td2dsm</artifactId>
+    <artifactId>securityca</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
     <properties>
@@ -42,9 +42,14 @@
             <version>4.1.0</version>
         </dependency>
         <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
             <groupId>eu.interopehrate</groupId>
             <artifactId>security-commons</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
         </dependency>
     </dependencies>
 

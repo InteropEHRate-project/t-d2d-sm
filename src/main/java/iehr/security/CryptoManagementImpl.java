@@ -1,10 +1,14 @@
 package iehr.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.interopehrate.security_commons.encryptedCommunication.EncryptedCommunicationFactory;
 import eu.interopehrate.security_commons.services.ca.CAServiceFactory;
 import eu.interopehrate.security_commons.services.ca.api.CAService;
 import eu.interopehrate.security_commons.encryptedCommunication.api.EncryptedCommunication;
 import iehr.security.api.CryptoManagement;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
@@ -24,21 +28,23 @@ public class CryptoManagementImpl implements CryptoManagement {
 //    private static final String KEYSTORE_ALIAS = "ResearchCenter";
 //    private static final String RESEARCH_USERNAME = "research";
     private static final String KEYSTORE_PASSWORD = "interop";
-    private static final String KEYSTORE_NAME = "keystore.p12";
+
 
     private final CAService ca;
     private final EncryptedCommunication encryptedCommunication;
+    private final String keystorePath;
 
-    public CryptoManagementImpl(String caUrl) {
+    public CryptoManagementImpl(String caUrl, String keystorePath) {
         ca = CAServiceFactory.create(caUrl);
         encryptedCommunication = EncryptedCommunicationFactory.create();
+        this.keystorePath = keystorePath;
     }
 
     @Override
     public PrivateKey getPrivateKey(String alias) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
         char[] password = KEYSTORE_PASSWORD.toCharArray();
         KeyStore keyStore=KeyStore.getInstance("PKCS12");
-        FileInputStream stream = new FileInputStream(KEYSTORE_NAME);
+        FileInputStream stream = new FileInputStream(keystorePath);
         keyStore.load(stream,password);
         PrivateKey key = (PrivateKey)keyStore.getKey(alias, password);
         return (PrivateKey) key;
@@ -50,7 +56,7 @@ public class CryptoManagementImpl implements CryptoManagement {
 
         // Reload the keystore
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        FileInputStream stream = new FileInputStream(KEYSTORE_NAME);
+        FileInputStream stream = new FileInputStream(keystorePath);
         keyStore.load(stream,password);
         java.security.cert.Certificate cert = keyStore.getCertificate(alias);
         RSAPublicKey pkey = (RSAPublicKey)cert.getPublicKey();
@@ -166,6 +172,18 @@ public class CryptoManagementImpl implements CryptoManagement {
     @Override
     public SecretKeySpec generateSymmtericKey(byte[] sharedSecret, int size) {
         return encryptedCommunication.generateSymmtericKey(sharedSecret, size);
+    }
+
+    @Override
+    public String createDetachedJws(byte[] certificateData, String signed) throws JsonProcessingException {
+        return ca.createDetachedJws(certificateData, signed);
+    }
+
+    @Override
+    public Boolean verifyDetachedJws(String jwsToken, String payload) throws CertificateException, JsonProcessingException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        RSAPublicKey rsaPublicKey = (RSAPublicKey)ca.getPublicKeyFromJws(jwsToken);
+        String signed = ca.getSignatureFromJws(jwsToken);
+        return verifyPayload(rsaPublicKey,payload.getBytes(), signed.getBytes());
     }
 
 }

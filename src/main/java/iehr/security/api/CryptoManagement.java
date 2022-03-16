@@ -1,5 +1,7 @@
 package iehr.security.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
@@ -147,4 +149,8 @@ public interface CryptoManagement {
      *
      */
     SecretKeySpec generateSymmtericKey(byte[] sharedSecret, int size);
+
+    String createDetachedJws(byte[] certificateData, String signed) throws JsonProcessingException;
+
+    Boolean verifyDetachedJws(String jwsToken, String payload) throws CertificateException, JsonProcessingException, NoSuchAlgorithmException, InvalidKeyException, SignatureException;
 }

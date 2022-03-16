@@ -10,7 +10,7 @@ public class CryptoManagementFactory {
      *
      * @return
      */
-    public static CryptoManagement create(final String caUrl) {
-        return new CryptoManagementImpl(caUrl);
+    public static CryptoManagement create(final String caUrl, final String keystorePath) {
+        return new CryptoManagementImpl(caUrl, keystorePath);
     }
 }
