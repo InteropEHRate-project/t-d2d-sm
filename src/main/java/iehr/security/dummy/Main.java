@@ -13,12 +13,14 @@ public class Main {
     public static final String USER_ALIAS = "healthorganization";
     private static final String KEYSTORE_PATH = "keystore.p12";
 
+
     public static void main(String[] args) throws Exception {
+        String payload = "{\"resourceType\":\"DiagnosticReport\",\"meta\":{\"profile\":[\"http://interopehrate.eu/fhir/StructureDefinition/DiagnosticReport-LaboratoryReport-IEHR\"]},\"language\":\"it\",\"extension\":[{\"url\":\"http://interopehrate.eu/fhir/StructureDefinition/ProvenanceExtension-IEHR\",\"valueReference\":{\"reference\":\"Provenance/09bcb9b6-4b35-4085-b4ce-fd4a08699e5f\"}}],\"category\":[{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v2-0074\",\"code\":\"LAB\"}]}],\"code\":{\"coding\":[{\"system\":\"http://loinc.org\",\"code\":\"30954-2\",\"display\":\"Testdiagnosticirilevantie/odatidilaboratorio\"}]},\"subject\":{\"reference\":\"urn:uuid:da282632-e037-4b19-82b2-de2c73072cdd\"},\"effectiveDateTime\":\"2019-06-18T09:00:00+01:00\"}";
+
         CryptoManagement cryptoManagement = CryptoManagementFactory.create(CA_URL, KEYSTORE_PATH);
 
         //sign
         PrivateKey privateKey = cryptoManagement.getPrivateKey(USER_ALIAS);
-        String payload = "payload";
         String signed = cryptoManagement.signPayload(payload,privateKey);
         System.out.println("Sign " + signed);
 

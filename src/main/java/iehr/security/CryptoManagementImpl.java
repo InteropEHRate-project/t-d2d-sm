@@ -6,14 +6,11 @@ import eu.interopehrate.security_commons.services.ca.CAServiceFactory;
 import eu.interopehrate.security_commons.services.ca.api.CAService;
 import eu.interopehrate.security_commons.encryptedCommunication.api.EncryptedCommunication;
 import iehr.security.api.CryptoManagement;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -25,8 +22,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CryptoManagementImpl implements CryptoManagement {
 
-//    private static final String KEYSTORE_ALIAS = "ResearchCenter";
-//    private static final String RESEARCH_USERNAME = "research";
     private static final String KEYSTORE_PASSWORD = "interop";
 
 
@@ -44,7 +39,7 @@ public class CryptoManagementImpl implements CryptoManagement {
     public PrivateKey getPrivateKey(String alias) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
         char[] password = KEYSTORE_PASSWORD.toCharArray();
         KeyStore keyStore=KeyStore.getInstance("PKCS12");
-        FileInputStream stream = new FileInputStream(keystorePath);
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(keystorePath);
         keyStore.load(stream,password);
         PrivateKey key = (PrivateKey)keyStore.getKey(alias, password);
         return (PrivateKey) key;
@@ -56,7 +51,7 @@ public class CryptoManagementImpl implements CryptoManagement {
 
         // Reload the keystore
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        FileInputStream stream = new FileInputStream(keystorePath);
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(keystorePath);
         keyStore.load(stream,password);
         java.security.cert.Certificate cert = keyStore.getCertificate(alias);
         RSAPublicKey pkey = (RSAPublicKey)cert.getPublicKey();

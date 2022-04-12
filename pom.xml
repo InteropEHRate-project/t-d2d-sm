@@ -6,7 +6,7 @@
 
     <groupId>eu.interopehrate</groupId>
     <artifactId>securityca</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>jar</packaging>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
